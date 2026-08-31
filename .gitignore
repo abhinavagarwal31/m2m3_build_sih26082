@@ -1,1 +1,3 @@
-references/ 
+references/
+backend/venv/
+backend/**/__pycache__/
