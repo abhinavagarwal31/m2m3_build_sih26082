@@ -5,6 +5,7 @@ import TrappingCard from "@/components/m2/TrappingCard";
 import TrappingSeriesChart from "@/components/m2/TrappingSeriesChart";
 import InversionCard from "@/components/m2/InversionCard";
 import InversionSeriesChart from "@/components/m2/InversionSeriesChart";
+import RecoveryCard from "@/components/m2/RecoveryCard";
 import { useDiagnostics } from "@/lib/hooks";
 import { useAppStore } from "@/lib/store";
 
@@ -46,6 +47,7 @@ export default function Home() {
           selectedHourIso={selectedHourIso}
         />
       )}
+      {diagnostics && <RecoveryCard recovery={diagnostics.recovery} />}
     </div>
   );
 }
