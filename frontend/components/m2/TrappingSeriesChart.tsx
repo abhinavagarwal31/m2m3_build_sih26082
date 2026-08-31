@@ -83,7 +83,11 @@ export default function TrappingSeriesChart({
           <YAxis domain={[0, 10]} tick={{ fontSize: 11 }} width={30} />
           <Tooltip
             labelFormatter={(label) => (typeof label === "string" ? formatIstHourLabel(label) : label)}
-            formatter={(value: unknown) => [value === null ? "No data" : `${value}`, "Trapping index"]}
+            formatter={(value: unknown, _name: unknown, item: { payload?: TrappingSeriesPoint }) => {
+              const category = item.payload?.category;
+              const text = value === null ? "No data" : category ? `${value} (${category})` : `${value}`;
+              return [text, "Trapping index"];
+            }}
           />
 
           <ReferenceLine

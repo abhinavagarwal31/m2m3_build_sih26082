@@ -38,12 +38,19 @@ export const POLLUTANT_CATEGORY_COLORS: Record<PollutantCategory, string> = {
   Severe: "bg-rose-200 text-rose-900 border-rose-400",
 };
 
-/** Hex equivalents of the above, for Recharts fills that can't take Tailwind classes. */
-export const POLLUTANT_CATEGORY_HEX: Record<PollutantCategory, string> = {
-  Good: "#bbf7d0",
-  Satisfactory: "#d9f99d",
-  Moderate: "#fef08a",
-  Poor: "#fed7aa",
-  "Very Poor": "#fecaca",
-  Severe: "#fecdd3",
+/**
+ * The exact same colors as POLLUTANT_CATEGORY_COLORS's bg-* classes,
+ * as raw CSS color values — Recharts fills can't take Tailwind
+ * classes. Values copied verbatim from Tailwind's own theme.css
+ * (Tailwind v4 defines colors in OKLCH, not hex) so these are
+ * byte-for-byte the same color Tailwind renders for each bg-*-100
+ * class, not an approximation.
+ */
+export const POLLUTANT_CATEGORY_FILL: Record<PollutantCategory, string> = {
+  Good: "oklch(96.2% 0.044 156.743)", // green-100
+  Satisfactory: "oklch(96.7% 0.067 122.328)", // lime-100
+  Moderate: "oklch(97.3% 0.071 103.193)", // yellow-100
+  Poor: "oklch(95.4% 0.038 75.164)", // orange-100
+  "Very Poor": "oklch(93.6% 0.032 17.717)", // red-100
+  Severe: "oklch(89.2% 0.058 10.001)", // rose-200
 };

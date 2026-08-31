@@ -14,7 +14,7 @@ import {
 } from "recharts";
 
 import type { CategoryBand, PollutantPeak, PollutantSeriesPoint } from "@/lib/contract";
-import { POLLUTANT_CATEGORY_HEX } from "@/lib/badgeColors";
+import { POLLUTANT_CATEGORY_FILL } from "@/lib/badgeColors";
 import { useAppStore } from "@/lib/store";
 import { formatIstHourLabel, getChartXAxisConfig } from "@/lib/time";
 
@@ -34,6 +34,14 @@ const VISIBILITY_OPTIONS: { value: Visibility; label: string }[] = [
   { value: "pm25", label: "PM2.5" },
   { value: "ozone", label: "O3" },
 ];
+
+/** Mirrors the backend's trivial band-matching logic — the bands themselves still always come from the API, never hardcoded here. */
+function categorize(value: number, bands: CategoryBand[]): string | null {
+  for (const band of bands) {
+    if (value >= band.min && value < band.max) return band.label;
+  }
+  return bands.length > 0 ? bands[bands.length - 1].label : null;
+}
 
 export default function PollutantSeriesChart({
   series72h,
@@ -90,7 +98,7 @@ export default function PollutantSeriesChart({
                 key={`pm25-${band.label}`}
                 y1={band.min}
                 y2={band.max}
-                fill={POLLUTANT_CATEGORY_HEX[band.label]}
+                fill={POLLUTANT_CATEGORY_FILL[band.label]}
                 fillOpacity={0.35}
               />
             ))}
@@ -100,7 +108,7 @@ export default function PollutantSeriesChart({
                 key={`ozone-${band.label}`}
                 y1={band.min}
                 y2={band.max}
-                fill={POLLUTANT_CATEGORY_HEX[band.label]}
+                fill={POLLUTANT_CATEGORY_FILL[band.label]}
                 fillOpacity={0.2}
               />
             ))}
@@ -117,10 +125,13 @@ export default function PollutantSeriesChart({
           <YAxis domain={[0, yMax]} tick={{ fontSize: 11 }} width={35} />
           <Tooltip
             labelFormatter={(label) => (typeof label === "string" ? formatIstHourLabel(label) : label)}
-            formatter={(value: unknown, name: unknown) => [
-              value === null ? "No data" : `${value}`,
-              name === "pm25" ? "PM2.5" : "O3",
-            ]}
+            formatter={(value: unknown, name: unknown) => {
+              const isPm25 = name === "pm25";
+              const bands = isPm25 ? pm25Bands : ozoneBands;
+              const category = typeof value === "number" ? categorize(value, bands) : null;
+              const text = value === null ? "No data" : category ? `${value} (${category})` : `${value}`;
+              return [text, isPm25 ? "PM2.5" : "O3"];
+            }}
           />
 
           <ReferenceLine

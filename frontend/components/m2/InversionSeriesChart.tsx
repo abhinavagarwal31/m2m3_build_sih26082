@@ -56,7 +56,12 @@ export default function InversionSeriesChart({
           <YAxis tick={{ fontSize: 11 }} width={30} />
           <Tooltip
             labelFormatter={(label) => (typeof label === "string" ? formatIstHourLabel(label) : label)}
-            formatter={(value: unknown) => [value === null ? "No data" : `${value}`, "Inversion strength (°C/km)"]}
+            formatter={(value: unknown, _name: unknown, item: { payload?: InversionSeriesPoint }) => {
+              const classification = item.payload?.classification;
+              const text =
+                value === null ? "No data" : classification ? `${value} (${classification})` : `${value}`;
+              return [text, "Inversion strength (°C/km)"];
+            }}
           />
 
           <ReferenceLine
