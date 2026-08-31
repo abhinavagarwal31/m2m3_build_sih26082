@@ -68,7 +68,7 @@ def _rk_puram_trend(h: int) -> tuple[float, float]:
     return round(mixing_depth_m, 1), round(wind_speed_ms, 2)
 
 
-def _rohini_trend(h: int) -> tuple[float, float]:
+def _rohini_trend() -> tuple[float, float]:
     mixing_depth_m = _rng.uniform(300.0, 700.0)
     wind_speed_ms = _rng.uniform(1.5, 4.0)
     return round(mixing_depth_m, 1), round(wind_speed_ms, 2)
@@ -96,7 +96,7 @@ def _build_all_data() -> dict[str, dict[str, dict]]:
             elif location == "RK Puram":
                 mixing_depth_m, wind_speed_ms = _rk_puram_trend(h)
             else:  # Rohini
-                mixing_depth_m, wind_speed_ms = _rohini_trend(h)
+                mixing_depth_m, wind_speed_ms = _rohini_trend()
 
             vertical_temp_profile = _vertical_temp_profile(hour_dt, base_temp_c)
             pm25 = _pm25_reading()

@@ -31,6 +31,11 @@ INVERSION_CLASSIFICATION_BANDS = [
     ("Strong", 3.0, float("inf")),
 ]
 INVERSION_VERTICAL_SPAN_M = (0.0, 500.0)  # surface-based determination, per POC scope
+INVERSION_EXPLAINER_TEXT = (
+    "A temperature inversion occurs when a layer of warm air sits above "
+    "cooler air near the surface, trapping pollutants that would "
+    "otherwise rise and disperse."
+)
 
 # --- Recovery text (F2.4) ---
 RECOVERY_DRIVER_TEMPLATE = "Winds are forecast to strengthen and the mixing layer is expected to deepen."
