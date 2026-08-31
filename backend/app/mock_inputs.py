@@ -111,6 +111,10 @@ def _build_all_data() -> dict[str, dict[str, dict]]:
             if location == "RK Puram" and h == 5:
                 pm25 = None
 
+            # RK Puram, hour+15: exercise inversion.py's "cannot determine" cascade end-to-end
+            if location == "RK Puram" and h == 15:
+                vertical_temp_profile = None
+
             data[location][hour_iso] = {
                 "mixing_depth_m": mixing_depth_m,
                 "wind_speed_ms": wind_speed_ms,

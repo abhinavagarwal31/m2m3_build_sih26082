@@ -3,6 +3,7 @@
 import ForecastHourSelector from "@/components/ForecastHourSelector";
 import TrappingCard from "@/components/m2/TrappingCard";
 import TrappingSeriesChart from "@/components/m2/TrappingSeriesChart";
+import InversionCard from "@/components/m2/InversionCard";
 import { useDiagnostics } from "@/lib/hooks";
 import { useAppStore } from "@/lib/store";
 
@@ -37,6 +38,7 @@ export default function Home() {
           recovery={diagnostics.recovery}
         />
       )}
+      {diagnostics && <InversionCard inversion={diagnostics.inversion} />}
     </div>
   );
 }

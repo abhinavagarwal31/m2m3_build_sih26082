@@ -1,17 +1,6 @@
-import type { Provenance, TrappingReading } from "@/lib/contract";
+import type { TrappingReading } from "@/lib/contract";
 import { TRAPPING_CATEGORY_COLORS } from "@/lib/badgeColors";
-
-function ProvenanceTag({ source }: { source: Provenance }) {
-  return (
-    <span
-      className={`inline-block whitespace-nowrap rounded px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide ${
-        source === "computed" ? "bg-sky-100 text-sky-700" : "bg-neutral-100 text-neutral-600"
-      }`}
-    >
-      {source === "computed" ? "Computed by this product" : "External forecast"}
-    </span>
-  );
-}
+import ProvenanceTag from "@/components/ProvenanceTag";
 
 export default function TrappingCard({ trapping }: { trapping: TrappingReading }) {
   const canCompute = trapping.index.value !== null;
