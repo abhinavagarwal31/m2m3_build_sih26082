@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app import mock_inputs
 from app.diagnostics import inversion, recovery, trapping
 from app.schemas import (
+    Bootstrap,
     CategoryBand,
     InversionSeriesPoint,
     M2Diagnostics,
@@ -59,6 +60,14 @@ def _classify_pollutant(value: Optional[float], bands: list[dict]) -> Optional[s
 
 def _category_bands(bands: list[dict]) -> list[CategoryBand]:
     return [CategoryBand(label=band["label"], min=band["min"], max=band["max"]) for band in bands]
+
+
+@app.get("/api/v1/bootstrap", response_model=Bootstrap)
+def get_bootstrap() -> Bootstrap:
+    return Bootstrap(
+        serverNowIso=mock_inputs.get_server_now_iso(),
+        defaultLocation=mock_inputs.get_locations()[0],
+    )
 
 
 @app.get("/api/v1/locations")

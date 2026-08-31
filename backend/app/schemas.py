@@ -5,6 +5,18 @@ from pydantic import BaseModel
 Provenance = Literal["computed", "external"]
 
 
+class Bootstrap(BaseModel):
+    """
+    Establishes the application's initial state on frontend startup —
+    the authoritative server "now" and a default location — so the
+    first render never has to guess at a starting hour from the
+    browser clock, and diagnostics/forecast queries have a real hour
+    to key on immediately.
+    """
+    serverNowIso: str
+    defaultLocation: str
+
+
 class ValueWithMeta(BaseModel):
     value: Optional[float] = None
     unit: Optional[str] = None

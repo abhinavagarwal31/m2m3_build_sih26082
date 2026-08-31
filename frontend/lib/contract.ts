@@ -1,5 +1,10 @@
 export type Provenance = "computed" | "external";
 
+export interface Bootstrap {
+  serverNowIso: string;
+  defaultLocation: string;
+}
+
 export interface ValueWithMeta<T = number> {
   value: T | null;
   unit: string | null;

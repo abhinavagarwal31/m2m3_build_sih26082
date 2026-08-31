@@ -1,8 +1,8 @@
-import type { M2Diagnostics, M3Forecast } from "./contract";
+import type { Bootstrap, M2Diagnostics, M3Forecast } from "./contract";
 
-async function fetchJson<T>(path: string, params: Record<string, string>): Promise<T> {
-  const query = new URLSearchParams(params).toString();
-  const response = await fetch(`${path}?${query}`);
+async function fetchJson<T>(path: string, params?: Record<string, string>): Promise<T> {
+  const query = params ? `?${new URLSearchParams(params).toString()}` : "";
+  const response = await fetch(`${path}${query}`);
 
   if (!response.ok) {
     const body = await response.json().catch(() => null);
@@ -11,6 +11,10 @@ async function fetchJson<T>(path: string, params: Record<string, string>): Promi
   }
 
   return response.json() as Promise<T>;
+}
+
+export function fetchBootstrap(): Promise<Bootstrap> {
+  return fetchJson<Bootstrap>("/api/v1/bootstrap");
 }
 
 export function fetchDiagnostics(location: string, hourIso: string): Promise<M2Diagnostics> {
