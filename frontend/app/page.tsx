@@ -6,7 +6,8 @@ import TrappingSeriesChart from "@/components/m2/TrappingSeriesChart";
 import InversionCard from "@/components/m2/InversionCard";
 import InversionSeriesChart from "@/components/m2/InversionSeriesChart";
 import RecoveryCard from "@/components/m2/RecoveryCard";
-import { useDiagnostics } from "@/lib/hooks";
+import CurrentReadingCard from "@/components/m3/CurrentReadingCard";
+import { useDiagnostics, useForecast } from "@/lib/hooks";
 import { useAppStore } from "@/lib/store";
 
 export default function Home() {
@@ -14,6 +15,7 @@ export default function Home() {
   const selectedHourIso = useAppStore((state) => state.selectedHourIso);
   const setLocation = useAppStore((state) => state.setLocation);
   const { data: diagnostics } = useDiagnostics(selectedLocation, selectedHourIso);
+  const { data: forecast } = useForecast(selectedLocation, selectedHourIso);
 
   return (
     <div className="flex flex-1 flex-col gap-4 bg-zinc-50 p-6">
@@ -48,6 +50,7 @@ export default function Home() {
         />
       )}
       {diagnostics && <RecoveryCard recovery={diagnostics.recovery} />}
+      {forecast && <CurrentReadingCard pm25={forecast.pm25} ozone={forecast.ozone} />}
     </div>
   );
 }
