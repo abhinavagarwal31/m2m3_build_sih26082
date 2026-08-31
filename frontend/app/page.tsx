@@ -7,6 +7,7 @@ import InversionCard from "@/components/m2/InversionCard";
 import InversionSeriesChart from "@/components/m2/InversionSeriesChart";
 import RecoveryCard from "@/components/m2/RecoveryCard";
 import CurrentReadingCard from "@/components/m3/CurrentReadingCard";
+import PollutantSeriesChart from "@/components/m3/PollutantSeriesChart";
 import { useDiagnostics, useForecast } from "@/lib/hooks";
 import { useAppStore } from "@/lib/store";
 
@@ -51,6 +52,16 @@ export default function Home() {
       )}
       {diagnostics && <RecoveryCard recovery={diagnostics.recovery} />}
       {forecast && <CurrentReadingCard pm25={forecast.pm25} ozone={forecast.ozone} />}
+      {forecast && (
+        <PollutantSeriesChart
+          series72h={forecast.series72h}
+          pm25Peak={forecast.pm25Peak}
+          ozonePeak={forecast.ozonePeak}
+          pm25Bands={forecast.pm25Bands}
+          ozoneBands={forecast.ozoneBands}
+          selectedHourIso={selectedHourIso}
+        />
+      )}
     </div>
   );
 }
