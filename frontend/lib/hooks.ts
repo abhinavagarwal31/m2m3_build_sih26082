@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-import { fetchBootstrap, fetchDiagnostics, fetchForecast } from "./api";
+import { fetchBootstrap, fetchDiagnostics, fetchForecast, fetchLocations } from "./api";
 import { useAppStore } from "./store";
 
 /**
@@ -64,5 +64,12 @@ export function useForecast(location: string, hourIso: string) {
     queryKey: ["forecast", location, hourIso],
     queryFn: () => fetchForecast(location, hourIso),
     enabled: location !== "" && hourIso !== "",
+  });
+}
+
+export function useLocations() {
+  return useQuery({
+    queryKey: ["locations"],
+    queryFn: fetchLocations,
   });
 }

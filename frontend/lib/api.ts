@@ -17,6 +17,10 @@ export function fetchBootstrap(): Promise<Bootstrap> {
   return fetchJson<Bootstrap>("/api/v1/bootstrap");
 }
 
+export function fetchLocations(): Promise<string[]> {
+  return fetchJson<string[]>("/api/v1/locations");
+}
+
 export function fetchDiagnostics(location: string, hourIso: string): Promise<M2Diagnostics> {
   return fetchJson<M2Diagnostics>("/api/v1/diagnostics", { location, hour: hourIso });
 }
