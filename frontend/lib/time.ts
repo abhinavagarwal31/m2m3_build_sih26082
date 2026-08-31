@@ -70,3 +70,48 @@ export function isIstDaytime(iso: string): boolean {
   const { hours } = toIstParts(iso);
   return hours >= 6 && hours < 18;
 }
+
+export interface NightBand {
+  x1: string;
+  x2: string;
+}
+
+/** Groups contiguous nighttime hours into [start, end] segments for ReferenceArea shading. */
+export function getNightBands(hourIsoList: readonly string[]): NightBand[] {
+  const bands: NightBand[] = [];
+  let start: string | null = null;
+
+  hourIsoList.forEach((hourIso, index) => {
+    const isNight = !isIstDaytime(hourIso);
+    if (isNight && start === null) start = hourIso;
+
+    const isLast = index === hourIsoList.length - 1;
+    const nextIsDay = !isLast && isIstDaytime(hourIsoList[index + 1]);
+    if (isNight && start !== null && (isLast || nextIsDay)) {
+      bands.push({ x1: start, x2: hourIso });
+      start = null;
+    }
+  });
+
+  return bands;
+}
+
+export interface ChartXAxisConfig {
+  domain: [string, string];
+  ticks: string[];
+  tickFormatter: (hourIso: string) => string;
+}
+
+/**
+ * Shared x-axis config (domain, tick positions, day-boundary-aware tick
+ * formatter) — every 72h series chart (trapping, inversion, pollutant)
+ * must import this rather than compute its own, so their x-axes stay
+ * pixel-identical per F3.2's alignment requirement.
+ */
+export function getChartXAxisConfig(hourIsoList: readonly string[]): ChartXAxisConfig {
+  return {
+    domain: [hourIsoList[0], hourIsoList[hourIsoList.length - 1]],
+    ticks: hourIsoList.filter((_, index) => index % 6 === 0),
+    tickFormatter: formatIstHourLabel,
+  };
+}

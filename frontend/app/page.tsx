@@ -2,6 +2,7 @@
 
 import ForecastHourSelector from "@/components/ForecastHourSelector";
 import TrappingCard from "@/components/m2/TrappingCard";
+import TrappingSeriesChart from "@/components/m2/TrappingSeriesChart";
 import { useDiagnostics } from "@/lib/hooks";
 import { useAppStore } from "@/lib/store";
 
@@ -28,6 +29,14 @@ export default function Home() {
       </div>
       <ForecastHourSelector />
       {diagnostics && <TrappingCard trapping={diagnostics.trapping} />}
+      {diagnostics && (
+        <TrappingSeriesChart
+          trappingSeries72h={diagnostics.trappingSeries72h}
+          trappingThresholdIndex={diagnostics.trappingThresholdIndex}
+          selectedHourIso={selectedHourIso}
+          recovery={diagnostics.recovery}
+        />
+      )}
     </div>
   );
 }
