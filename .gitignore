@@ -1,3 +1,4 @@
 references/
 backend/venv/
 backend/**/__pycache__/
+.vscode/
