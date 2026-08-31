@@ -58,9 +58,9 @@ export default function ForecastHourSelector() {
         <button
           type="button"
           onClick={() => setHour(serverNowIso)}
-          className="rounded-md bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-neutral-700"
+          className="min-h-11 min-w-11 rounded-md bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-700"
         >
-          Now
+          Demo Now
         </button>
       </div>
 
@@ -76,7 +76,7 @@ export default function ForecastHourSelector() {
           style={{
             background: `linear-gradient(to right, #d4d4d4 0%, #d4d4d4 ${nowPercent}%, #bae6fd ${nowPercent}%, #bae6fd 100%)`,
           }}
-          aria-label="Forecast hour, spanning the next 72 hours"
+          aria-label="Forecast hour, 72 hourly points from the demo start time"
         />
         {dayBoundaryPercents.map((percent) => (
           <div
@@ -89,7 +89,7 @@ export default function ForecastHourSelector() {
       </div>
 
       <div className="mt-1 flex justify-between text-xs text-neutral-400">
-        <span>{formatIstHourLabel(hours[0])} (now)</span>
+        <span>{formatIstHourLabel(hours[0])} · Demo start</span>
         <span>{formatIstHourLabel(hours[hours.length - 1])}</span>
       </div>
     </div>

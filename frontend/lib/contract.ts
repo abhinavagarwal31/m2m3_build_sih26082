@@ -13,13 +13,21 @@ export interface ValueWithMeta<T = number> {
 
 export type TrappingCategory = "Low" | "Moderate" | "High" | "Severe";
 
-export interface TrappingReading {
-  index: ValueWithMeta;
+/**
+ * ventilationIndex = wind_speed_10m x boundary_layer_height (m^2/s),
+ * the team-supplied formula. Higher = better ventilation, lower =
+ * weaker ventilation / stronger trapping — the OPPOSITE direction from
+ * the old placeholder trapping index. category/interpretation are
+ * typed and present but always null until the team supplies a real
+ * VI-to-category mapping (see backend/app/diagnostics/ventilation.py).
+ */
+export interface VentilationReading {
+  ventilationIndex: ValueWithMeta;
   category: TrappingCategory | null;
   interpretation: string | null;
-  mixingDepthM: ValueWithMeta;
   windSpeedMs: ValueWithMeta;
-  typicalMixingDepthM: ValueWithMeta;
+  boundaryLayerHeightM: ValueWithMeta;
+  typicalBoundaryLayerHeightM: ValueWithMeta;
 }
 
 export type InversionClass = "None" | "Weak" | "Moderate" | "Strong";
@@ -39,9 +47,9 @@ export interface InversionReading {
   forwardSeries72h: InversionSeriesPoint[];
 }
 
-export interface TrappingSeriesPoint {
+export interface VentilationSeriesPoint {
   hourIso: string;
-  trappingIndex: number | null;
+  ventilationIndex: number | null;
   category: string | null;
 }
 
@@ -57,9 +65,9 @@ export interface M2Diagnostics {
   location: string;
   hourIso: string;
   serverNowIso: string;
-  trapping: TrappingReading;
-  trappingThresholdIndex: number;
-  trappingSeries72h: TrappingSeriesPoint[];
+  ventilation: VentilationReading;
+  ventilationRecoveryThreshold: number;
+  ventilationSeries72h: VentilationSeriesPoint[];
   inversion: InversionReading;
   recovery: RecoveryEstimate;
 }

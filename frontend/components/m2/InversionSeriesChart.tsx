@@ -13,7 +13,7 @@ import {
 
 import type { InversionSeriesPoint } from "@/lib/contract";
 import { useAppStore } from "@/lib/store";
-import { formatIstHourLabel, getChartXAxisConfig, getNightBands } from "@/lib/time";
+import { CHART_Y_AXIS_WIDTH, formatIstHourLabel, getChartXAxisConfig, getNightBands } from "@/lib/time";
 
 interface InversionSeriesChartProps {
   forwardSeries72h: InversionSeriesPoint[];
@@ -50,10 +50,11 @@ export default function InversionSeriesChart({
             domain={axis.domain}
             ticks={axis.ticks}
             tickFormatter={axis.tickFormatter}
+            padding={axis.padding}
             tick={{ fontSize: 11 }}
             minTickGap={20}
           />
-          <YAxis tick={{ fontSize: 11 }} width={30} />
+          <YAxis tick={{ fontSize: 11 }} width={CHART_Y_AXIS_WIDTH} />
           <Tooltip
             labelFormatter={(label) => (typeof label === "string" ? formatIstHourLabel(label) : label)}
             formatter={(value: unknown, _name: unknown, item: { payload?: InversionSeriesPoint }) => {

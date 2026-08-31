@@ -7,32 +7,38 @@ from datetime import datetime, timezone
 from typing import Optional
 from zoneinfo import ZoneInfo
 
-from app.schemas import RecoveryEstimate, TrappingSeriesPoint
+from app.schemas import RecoveryEstimate, VentilationSeriesPoint
 from app.thresholds import RECOVERY_DRIVER_TEMPLATE, RECOVERY_UNCERTAINTY_NOTE
 
 IST = ZoneInfo("Asia/Kolkata")
 
 
-def find_threshold_crossing(
-    trapping_series: list[TrappingSeriesPoint], threshold: float
+def find_ventilation_recovery_crossing(
+    ventilation_series: list[VentilationSeriesPoint], threshold: float
 ) -> Optional[str]:
     """
     Scans an already-built series for the first hour where
-    trappingIndex drops below threshold after having been at or above
-    it. Returns that hour's hourIso, or None if no such crossing
-    exists — including when the series never starts above threshold,
-    or when gaps make a crossing undeterminable. A None trappingIndex
-    is treated as neither above nor below and can never itself mark a
-    crossing.
+    ventilationIndex rises ABOVE threshold after having been at or
+    below it. Returns that hour's hourIso, or None if no such crossing
+    exists — including when the series never starts at/below
+    threshold, or when gaps make a crossing undeterminable. A None
+    ventilationIndex is treated as neither above nor below and can
+    never itself mark a crossing.
+
+    This is an UPWARD crossing — the opposite direction from the old
+    trapping-index version of this function (which looked for a
+    downward crossing, since a HIGH trapping index meant trapped and
+    LOW meant clear). VI is the reverse: LOW VI means weak
+    ventilation/trapped, and recovery means VI rising back up.
     """
-    seen_above_threshold = False
-    for point in trapping_series:
-        if point.trappingIndex is None:
+    seen_at_or_below_threshold = False
+    for point in ventilation_series:
+        if point.ventilationIndex is None:
             continue
-        if seen_above_threshold and point.trappingIndex < threshold:
+        if seen_at_or_below_threshold and point.ventilationIndex > threshold:
             return point.hourIso
-        if point.trappingIndex >= threshold:
-            seen_above_threshold = True
+        if point.ventilationIndex <= threshold:
+            seen_at_or_below_threshold = True
     return None
 
 
@@ -49,7 +55,7 @@ def _part_of_day(hour: int) -> str:
 def build_recovery_estimate(crossing_hour_iso: Optional[str]) -> RecoveryEstimate:
     """
     Never independently invents a recovery time — it only ever derives
-    one from find_threshold_crossing's result.
+    one from find_ventilation_recovery_crossing's result.
     """
     if crossing_hour_iso is None:
         return RecoveryEstimate(withinWindow=False)

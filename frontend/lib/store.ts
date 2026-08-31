@@ -10,7 +10,11 @@ interface AppState {
 }
 
 export const useAppStore = create<AppState>((set) => ({
-  selectedLocation: "Anand Vihar",
+  // Deliberately empty — useBootstrap() is the sole source of truth for all
+  // three of these on startup (see lib/hooks.ts). A hardcoded default here
+  // would coincidentally match the backend's defaultLocation today but isn't
+  // actually driven by it, which is fake synchronization.
+  selectedLocation: "",
   selectedHourIso: "",
   serverNowIso: "",
   setLocation: (location) => set({ selectedLocation: location }),

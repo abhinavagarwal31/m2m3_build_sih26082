@@ -4,8 +4,13 @@ import type { InversionClass, PollutantCategory, TrappingCategory } from "./cont
  * Fixed per-category colors — never derived from the data range itself,
  * so the same category always looks the same regardless of what else
  * is on screen.
+ *
+ * Currently unused: ventilation.category is always null until the team
+ * supplies a real VI-to-category mapping (see
+ * backend/app/diagnostics/ventilation.py::map_vi_to_trapping_category).
+ * Kept ready to use the moment that mapping exists.
  */
-export const TRAPPING_CATEGORY_COLORS: Record<TrappingCategory, string> = {
+export const VENTILATION_CATEGORY_COLORS: Record<TrappingCategory, string> = {
   Low: "bg-green-100 text-green-800 border-green-300",
   Moderate: "bg-yellow-100 text-yellow-800 border-yellow-300",
   High: "bg-orange-100 text-orange-800 border-orange-300",
@@ -13,7 +18,7 @@ export const TRAPPING_CATEGORY_COLORS: Record<TrappingCategory, string> = {
 };
 
 /**
- * Deliberately a different color family from TRAPPING_CATEGORY_COLORS
+ * Deliberately a different color family from VENTILATION_CATEGORY_COLORS
  * (slate/indigo/purple/fuchsia vs. green/yellow/orange/red) so trapping
  * and inversion badges are never visually interchangeable at a glance.
  */
@@ -25,9 +30,10 @@ export const INVERSION_CLASSIFICATION_COLORS: Record<InversionClass, string> = {
 };
 
 /**
- * Standard AQI-style severity colors, used identically by
- * CurrentReadingCard and PollutantSeriesChart's band shading — the two
- * must match exactly per F3.2's acceptance criteria.
+ * Colors for the per-pollutant sub-index category bands (not a composite
+ * national AQI), used identically by CurrentReadingCard and
+ * PollutantSeriesChart's band shading — the two must match exactly per
+ * F3.2's acceptance criteria.
  */
 export const POLLUTANT_CATEGORY_COLORS: Record<PollutantCategory, string> = {
   Good: "bg-green-100 text-green-800 border-green-300",

@@ -5,8 +5,17 @@
  * logic, and IST formatting.
  */
 
-// Must match backend/app/mock_inputs.py's HOURS_AHEAD.
+// 72 hourly points, indexed hour 0 (=serverNowIso) through hour 71
+// (=serverNowIso + 71h) — not a 73-point now-to-+72h window. Must match
+// backend/app/mock_inputs.py's HOURS_AHEAD.
 export const FORECAST_HOURS = 72;
+
+// Every 72h series chart (trapping, inversion, both pollutant charts) must
+// use this exact YAxis width. A mismatched Y-axis width shifts how much
+// plot-area each chart reserves on the left, which shifts every x-position
+// by a few pixels even when domain/ticks are otherwise identical — this is
+// what actually broke "pixel-identical" alignment before (30 vs 35).
+export const CHART_Y_AXIS_WIDTH = 40;
 
 const IST_OFFSET_MS = (5 * 60 + 30) * 60 * 1000;
 const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -100,18 +109,26 @@ export interface ChartXAxisConfig {
   domain: [string, string];
   ticks: string[];
   tickFormatter: (hourIso: string) => string;
+  padding: { left: number; right: number };
 }
 
 /**
  * Shared x-axis config (domain, tick positions, day-boundary-aware tick
- * formatter) — every 72h series chart (trapping, inversion, pollutant)
- * must import this rather than compute its own, so their x-axes stay
- * pixel-identical per F3.2's alignment requirement.
+ * formatter, edge padding) — every 72h series chart (trapping, inversion,
+ * pollutant) must import this rather than compute its own, so their
+ * x-axes stay pixel-identical per F3.2's alignment requirement. This
+ * includes `padding`: without it, the selected-hour marker at hour 0 (the
+ * "Now" position — also the default state on every page load) renders
+ * exactly on top of the Y-axis line and becomes invisible. A mismatched
+ * padding value between charts would silently reintroduce that same
+ * pixel-drift bug, so treat it exactly like domain/ticks — one shared
+ * value, never a per-chart literal.
  */
 export function getChartXAxisConfig(hourIsoList: readonly string[]): ChartXAxisConfig {
   return {
     domain: [hourIsoList[0], hourIsoList[hourIsoList.length - 1]],
     ticks: hourIsoList.filter((_, index) => index % 6 === 0),
     tickFormatter: formatIstHourLabel,
+    padding: { left: 12, right: 12 },
   };
 }

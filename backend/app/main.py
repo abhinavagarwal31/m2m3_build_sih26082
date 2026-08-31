@@ -4,7 +4,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import mock_inputs
-from app.diagnostics import inversion, recovery, trapping
+from app.diagnostics import inversion, recovery, ventilation
 from app.schemas import (
     Bootstrap,
     CategoryBand,
@@ -14,14 +14,14 @@ from app.schemas import (
     PollutantPeak,
     PollutantReading,
     PollutantSeriesPoint,
-    TrappingSeriesPoint,
+    VentilationSeriesPoint,
     ValueWithMeta,
 )
 from app.thresholds import (
     INVERSION_EXPLAINER_TEXT,
     OZONE_BANDS,
     PM25_BANDS,
-    TRAPPING_SEALED_THRESHOLD,
+    VI_RECOVERY_THRESHOLD_PLACEHOLDER,
 )
 
 app = FastAPI()
@@ -81,25 +81,25 @@ def get_diagnostics(location: str, hour: str) -> M2Diagnostics:
     _require_known_hour(hour)
 
     hours = mock_inputs.get_hours_iso()
-    typical_mixing_depth_m = mock_inputs.get_typical_mixing_depth_m(location)
+    typical_boundary_layer_height_m = mock_inputs.get_typical_boundary_layer_height_m(location)
 
-    trapping_by_hour = {}
+    ventilation_by_hour = {}
     inversion_by_hour = {}
-    trapping_series: list[TrappingSeriesPoint] = []
+    ventilation_series: list[VentilationSeriesPoint] = []
     inversion_series: list[InversionSeriesPoint] = []
 
     for hour_iso in hours:
         inputs = mock_inputs.get_hourly_inputs(location, hour_iso)
 
-        trapping_reading = trapping.build_trapping_reading(
-            inputs["mixing_depth_m"], inputs["wind_speed_ms"], typical_mixing_depth_m
+        ventilation_reading = ventilation.build_ventilation_reading(
+            inputs["wind_speed_ms"], inputs["boundary_layer_height_m"], typical_boundary_layer_height_m
         )
-        trapping_by_hour[hour_iso] = trapping_reading
-        trapping_series.append(
-            TrappingSeriesPoint(
+        ventilation_by_hour[hour_iso] = ventilation_reading
+        ventilation_series.append(
+            VentilationSeriesPoint(
                 hourIso=hour_iso,
-                trappingIndex=trapping_reading.index.value,
-                category=trapping_reading.category,
+                ventilationIndex=ventilation_reading.ventilationIndex.value,
+                category=ventilation_reading.category,
             )
         )
 
@@ -115,7 +115,9 @@ def get_diagnostics(location: str, hour: str) -> M2Diagnostics:
             )
         )
 
-    crossing_hour_iso = recovery.find_threshold_crossing(trapping_series, TRAPPING_SEALED_THRESHOLD)
+    crossing_hour_iso = recovery.find_ventilation_recovery_crossing(
+        ventilation_series, VI_RECOVERY_THRESHOLD_PLACEHOLDER
+    )
     recovery_estimate = recovery.build_recovery_estimate(crossing_hour_iso)
 
     current_inversion = inversion_by_hour[hour].model_copy(
@@ -126,9 +128,9 @@ def get_diagnostics(location: str, hour: str) -> M2Diagnostics:
         location=location,
         hourIso=hour,
         serverNowIso=mock_inputs.get_server_now_iso(),
-        trapping=trapping_by_hour[hour],
-        trappingThresholdIndex=TRAPPING_SEALED_THRESHOLD,
-        trappingSeries72h=trapping_series,
+        ventilation=ventilation_by_hour[hour],
+        ventilationRecoveryThreshold=VI_RECOVERY_THRESHOLD_PLACEHOLDER,
+        ventilationSeries72h=ventilation_series,
         inversion=current_inversion,
         recovery=recovery_estimate,
     )

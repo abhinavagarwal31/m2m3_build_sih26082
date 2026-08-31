@@ -26,13 +26,21 @@ class ValueWithMeta(BaseModel):
 TrappingCategory = Literal["Low", "Moderate", "High", "Severe"]
 
 
-class TrappingReading(BaseModel):
-    index: ValueWithMeta
+class VentilationReading(BaseModel):
+    """
+    ventilationIndex = wind_speed_10m x boundary_layer_height (m^2/s).
+    Higher = better ventilation, lower = weaker ventilation / stronger
+    trapping — the OPPOSITE direction from the old placeholder trapping
+    index. category/interpretation are typed and present but always
+    None until the team supplies a real VI-to-category mapping (see
+    ventilation.py::map_vi_to_trapping_category).
+    """
+    ventilationIndex: ValueWithMeta
     category: Optional[TrappingCategory] = None
     interpretation: Optional[str] = None
-    mixingDepthM: ValueWithMeta
     windSpeedMs: ValueWithMeta
-    typicalMixingDepthM: ValueWithMeta
+    boundaryLayerHeightM: ValueWithMeta
+    typicalBoundaryLayerHeightM: ValueWithMeta
 
 
 InversionClass = Literal["None", "Weak", "Moderate", "Strong"]
@@ -53,9 +61,9 @@ class InversionReading(BaseModel):
     forwardSeries72h: list[InversionSeriesPoint]
 
 
-class TrappingSeriesPoint(BaseModel):
+class VentilationSeriesPoint(BaseModel):
     hourIso: str
-    trappingIndex: Optional[float] = None
+    ventilationIndex: Optional[float] = None
     category: Optional[str] = None
 
 
@@ -71,9 +79,9 @@ class M2Diagnostics(BaseModel):
     location: str
     hourIso: str
     serverNowIso: str
-    trapping: TrappingReading
-    trappingThresholdIndex: float
-    trappingSeries72h: list[TrappingSeriesPoint]
+    ventilation: VentilationReading
+    ventilationRecoveryThreshold: float
+    ventilationSeries72h: list[VentilationSeriesPoint]
     inversion: InversionReading
     recovery: RecoveryEstimate
 
